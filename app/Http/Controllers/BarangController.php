@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Barang;
 use App\Http\Requests\StoreBarangRequest;
 use App\Http\Requests\UpdateBarangRequest;
+use Illuminate\Http\Request;
 
 class BarangController extends Controller
 {
@@ -15,6 +16,9 @@ class BarangController extends Controller
      */
     public function index()
     {
+        $data['judul'] = 'Daftar Barang';
+        $data['barang'] = Barang::all();
+        return view('barang.barangV', ["data" => $data]);
         //
     }
 
@@ -23,9 +27,10 @@ class BarangController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function tambah()
     {
-        //
+        $data['judul'] = 'Tambah Barang';
+        return view('barang.tambahBarangV', ["data" => $data]);
     }
 
     /**
@@ -34,9 +39,10 @@ class BarangController extends Controller
      * @param  \App\Http\Requests\StoreBarangRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreBarangRequest $request)
+    public function simpan(Request $request)
     {
-        //
+        Barang::create($request->all());
+        return redirect('barang');
     }
 
     /**
@@ -56,9 +62,10 @@ class BarangController extends Controller
      * @param  \App\Models\Barang  $barang
      * @return \Illuminate\Http\Response
      */
-    public function edit(Barang $barang)
+    public function ubah($id)
     {
-        //
+        $data = Barang::find($id);
+        return view('barang.ubahBarangV', compact('data'));
     }
 
     /**
@@ -68,9 +75,16 @@ class BarangController extends Controller
      * @param  \App\Models\Barang  $barang
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateBarangRequest $request, Barang $barang)
+    public function perbaharui(Request $request)
     {
-        //
+        $barang = Barang::find($request->id);
+        $barang->kategori = $request->kategori;
+        $barang->nama_brg = $request->nama_brg;
+        $barang->unit = $request->unit;
+        $barang->harga = $request->harga;
+        $barang->qty = $request->qty;
+        $barang->save();
+        return redirect('barang');
     }
 
     /**
@@ -79,8 +93,10 @@ class BarangController extends Controller
      * @param  \App\Models\Barang  $barang
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Barang $barang)
+    public function hapus($id)
     {
-        //
+        $data = Barang::find($id);
+        $data->delete();
+        return redirect('barang');
     }
 }

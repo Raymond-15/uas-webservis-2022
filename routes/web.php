@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BarangController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +17,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('layouts.main');
 });
+
+Route::get('/barang', [BarangController::class, 'index'])->name('barang.index');
+Route::get('/barang/tambah', [BarangController::class, 'tambah'])->name('barang.tambah');
+Route::post('barang/simpan', [BarangController::class, 'simpan'])->name('barang.simpan');
+Route::get('/barang/ubah/{id}', [BarangController::class, 'ubah'])->name('barang.ubah');
+Route::get('/barang/hapus/{id}', [BarangController::class, 'hapus'])->name('barang.hapus');
+Route::post('barang/perbaharui', [BarangController::class, 'perbaharui'])->name('barang.perbaharui');

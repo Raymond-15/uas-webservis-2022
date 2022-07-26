@@ -8,9 +8,9 @@
   </head>
   <body>
     @include('partials.navbar')
-    
-    <div class="container">
-      <h1>Hello, world!</h1>
+
+    <div class="container mt-4">
+      @yield('container')
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
   </body>
