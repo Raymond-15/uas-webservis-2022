@@ -1,6 +1,11 @@
 @extends('layouts.main')
 
 @section('container')
+@if (session()->has('pesan'))
+  <div class="alert alert-success" role="alert">
+    {{ session('pesan') }}
+  </div>
+@endif
 <div class="card">
   <div class="card-header">
     @php

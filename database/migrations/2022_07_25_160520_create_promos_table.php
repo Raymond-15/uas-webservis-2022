@@ -15,11 +15,13 @@ class CreatePromosTable extends Migration
     {
         Schema::create('promos', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_diskon', 36);
+            $table->string('nama_promo', 36);
             $table->foreignId('kode_brg')->constrained('barangs');
             $table->integer('diskon');
             $table->integer('qty_brg');
-            $table->foreignId('jadwal_id')->constrained('jadwals');
+            $table->string('jadwal_id');
+            $table->foreign('jadwal_id')->references('id')->on('jadwals');
+            // $table->foreignId('jadwal_id')->constrained('jadwals');
             $table->timestamps();
         });
     }

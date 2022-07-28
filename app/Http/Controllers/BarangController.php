@@ -41,8 +41,15 @@ class BarangController extends Controller
      */
     public function simpan(Request $request)
     {
+        $this->validate($request, [
+            'nama_brg' => 'required|unique:barangs,nama_brg',
+            'kategori' => 'required',
+            'unit' => 'required',
+            'harga' => 'required',
+            'qty' => 'required',
+        ]);
         Barang::create($request->all());
-        return redirect('barang');
+        return redirect('barang')->with('pesan', 'Data berhasil ditambahkan!');
     }
 
     /**
@@ -51,9 +58,11 @@ class BarangController extends Controller
      * @param  \App\Models\Barang  $barang
      * @return \Illuminate\Http\Response
      */
-    public function show(Barang $barang)
+    public function show(Request $request)
     {
-        //
+        $id = $request->id;
+        $data = Barang::find($id);
+        return json_encode($data);
     }
 
     /**
@@ -84,7 +93,7 @@ class BarangController extends Controller
         $barang->harga = $request->harga;
         $barang->qty = $request->qty;
         $barang->save();
-        return redirect('barang');
+        return redirect('barang')->with('pesan', 'Data berhasil diubah!');
     }
 
     /**
@@ -97,6 +106,6 @@ class BarangController extends Controller
     {
         $data = Barang::find($id);
         $data->delete();
-        return redirect('barang');
+        return redirect('barang')->with('pesan', 'Data berhasil dihapus!');
     }
 }

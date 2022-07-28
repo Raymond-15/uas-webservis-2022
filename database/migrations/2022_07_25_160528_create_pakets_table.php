@@ -19,7 +19,8 @@ class CreatePaketsTable extends Migration
             $table->string('nama_paket', 36);
             $table->string('barang_id', 36);
             $table->integer('harga_paket');
-            $table->foreignId('jadwal_id')->constrained('jadwals');
+            $table->string('jadwal_id');
+            $table->foreign('jadwal_id')->references('id')->on('jadwals');
             $table->timestamps();
         });
     }
