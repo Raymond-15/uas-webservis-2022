@@ -88,8 +88,6 @@ class PromoController extends Controller
         $jadwal->day_no = $days;
         $jadwal->start_date = $date_start;
         $jadwal->end_date = $date_end;
-        $jadwal->save();
-
 
         $promo = new Promo;
         $promo->nama_promo = $request->nama_promo;
@@ -97,10 +95,11 @@ class PromoController extends Controller
         $promo->diskon = $request->diskon;
         $promo->qty_brg = $request->qty_brg;
         $promo->jadwal_id = $id_jadwal;
+
+        $jadwal->save();
         $promo->save();
 
-        // dd($days);
-        redirect('promo');
+        return redirect('promo')->with('pesan', 'Data berhasil ditambahkan!');
     }
 
     /**
@@ -123,9 +122,11 @@ class PromoController extends Controller
     public function ubah($id)
     {
         $data['judul'] = 'Ubah Promo';
-        $data['promo'] = DB::table('promos')->join('barangs', 'barangs.id', '=', 'promos.kode_brg')->join('jadwals', 'jadwals.id', '=', 'promos.jadwal_id')->where('promos.id', $id)->get(['promos.*', 'barangs.nama_brg', 'barangs.harga', 'jadwals.freq', 'jadwals.day_no', 'jadwals.start_date', 'jadwals.end_date']);
+        $gabung = DB::table('promos')->join('barangs', 'barangs.id', '=', 'promos.kode_brg')->join('jadwals', 'jadwals.id', '=', 'promos.jadwal_id')->where('promos.id', $id)->get(['promos.*', 'barangs.nama_brg', 'barangs.harga', 'jadwals.freq', 'jadwals.day_no', 'jadwals.start_date', 'jadwals.end_date']);
+        $data['promo'] = $gabung;
+        $data['hari'] = explode(' ', $gabung[0]->day_no);
+
         return view('promo.ubahPromoV', compact('data'));
-        // dd($data['promo']);
     }
 
     /**
@@ -148,6 +149,8 @@ class PromoController extends Controller
      */
     public function hapus($id)
     {
-        //
+        $data = Promo::find($id);
+        $data->delete();
+        return redirect('barang')->with('pesan', 'Data berhasil dihapus!');
     }
 }

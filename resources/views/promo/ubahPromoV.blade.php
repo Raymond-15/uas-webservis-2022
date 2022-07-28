@@ -55,32 +55,79 @@
         <label>Pilih Hari</label>
         <div class="form-row-checkbox" style="display: flex; flex-wrap: wrap;">
             <div class="custom-control custom-checkbox" style="margin-right: 20px;">
-                <input type="checkbox" name="day[]" class="custom-control-input" id="customCheck1" value="1">
+              @if ($data['hari'][0] == '1')
+                <input checked type="checkbox" name="day[]" class="custom-control-input" id="customCheck1" value="1">  
                 <label class="custom-control-label" for="customCheck1">Mon </label>
+              @else
+              <input type="checkbox" name="day[]" class="custom-control-input" id="customCheck1" value="1">  
+              <label class="custom-control-label" for="customCheck1">Mon </label>
+              @endif
             </div>
             <div class="custom-control custom-checkbox" style="margin-right: 20px;">
-                <input type="checkbox" name="day[]" class="custom-control-input" id="customCheck2" value="2">
-                <label class="custom-control-label" for="customCheck2">Tue </label>
+              @if ($data['hari'][0] == '2')
+              <input checked type="checkbox" name="day[]" class="custom-control-input" id="customCheck2" value="2">
+              <label class="custom-control-label" for="customCheck2">Tue </label>
+              
+              @else
+              <input type="checkbox" name="day[]" class="custom-control-input" id="customCheck2" value="2">
+              <label class="custom-control-label" for="customCheck2">Tue </label>
+                  
+              @endif
             </div>
             <div class="custom-control custom-checkbox" style="margin-right: 20px;">
-                <input type="checkbox" name="day[]" class="custom-control-input" id="customCheck3" value="3">
-                <label class="custom-control-label" for="customCheck3">Wed </label>
+              @if ($data['hari'][0] == '3')
+              <input checked type="checkbox" name="day[]" class="custom-control-input" id="customCheck3" value="3">
+              <label class="custom-control-label" for="customCheck3">Wed </label>
+                  
+              @else
+              <input type="checkbox" name="day[]" class="custom-control-input" id="customCheck3" value="3">
+              <label class="custom-control-label" for="customCheck3">Wed </label>
+                  
+              @endif
             </div>
             <div class="custom-control custom-checkbox" style="margin-right: 20px;">
-                <input type="checkbox" name="day[]" class="custom-control-input" id="customCheck4" value="4">
-                <label class="custom-control-label" for="customCheck4">Thu </label>
+              @if ($data['hari'][0] == '4')
+              <input checked type="checkbox" name="day[]" class="custom-control-input" id="customCheck4" value="4">
+              <label class="custom-control-label" for="customCheck4">Thu </label>
+              
+              @else
+              <input type="checkbox" name="day[]" class="custom-control-input" id="customCheck4" value="4">
+              <label class="custom-control-label" for="customCheck4">Thu </label>
+                  
+              @endif
             </div>
             <div class="custom-control custom-checkbox" style="margin-right: 20px;">
-                <input type="checkbox" name="day[]" class="custom-control-input" id="customCheck5" value="5">
-                <label class="custom-control-label" for="customCheck5">Fri </label>
+              @if ($data['hari'][0] == '5')
+              <input checked type="checkbox" name="day[]" class="custom-control-input" id="customCheck5" value="5">
+              <label class="custom-control-label" for="customCheck5">Fri </label>
+              
+              @else
+              <input type="checkbox" name="day[]" class="custom-control-input" id="customCheck5" value="5">
+              <label class="custom-control-label" for="customCheck5">Fri </label>
+                  
+              @endif
             </div>
             <div class="custom-control custom-checkbox" style="margin-right: 20px;">
-                <input type="checkbox" name="day[]" class="custom-control-input" id="customCheck6" value="6">
-                <label class="custom-control-label" for="customCheck6">Sat </label>
+              @if ($data['hari'][0] == '6')
+              <input checked type="checkbox" name="day[]" class="custom-control-input" id="customCheck6" value="6">
+              <label class="custom-control-label" for="customCheck6">Sat </label>
+                  
+              @else
+              <input type="checkbox" name="day[]" class="custom-control-input" id="customCheck6" value="6">
+              <label class="custom-control-label" for="customCheck6">Sat </label>
+                  
+              @endif
             </div>
             <div class="custom-control custom-checkbox" style="margin-right: 20px;">
-                <input type="checkbox" name="day[]" class="custom-control-input" id="customCheck7" value="7">
-                <label class="custom-control-label" for="customCheck7">Sun </label>
+              @if ($data['hari'][0] == '7')
+              <input checked type="checkbox" name="day[]" class="custom-control-input" id="customCheck7" value="7">
+              <label class="custom-control-label" for="customCheck7">Sun </label>
+              
+              @else
+              <input type="checkbox" name="day[]" class="custom-control-input" id="customCheck7" value="7">
+              <label class="custom-control-label" for="customCheck7">Sun </label>
+                  
+              @endif
             </div>
         </div>
       </div>
