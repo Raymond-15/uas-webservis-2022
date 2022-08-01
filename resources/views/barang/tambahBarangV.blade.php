@@ -3,9 +3,7 @@
 @section('container')
 <div class="card">
   <div class="card-header">
-    @php
-        echo $data['judul'];
-    @endphp
+    {{ $data['judul'] }}
     <a href="{{ url('barang') }}" class="btn btn-primary btn-sm float-end">Kembali</a>
   </div>
   <div class="card-body">

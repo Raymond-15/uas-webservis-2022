@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ApiResponse;
 use App\Models\Barang;
 use App\Http\Requests\StoreBarangRequest;
 use App\Http\Requests\UpdateBarangRequest;
+use Exception;
 use Illuminate\Http\Request;
 
 class BarangController extends Controller
@@ -19,13 +21,16 @@ class BarangController extends Controller
         $data['judul'] = 'Daftar Barang';
         $data['barang'] = Barang::all();
         return view('barang.barangV', ["data" => $data]);
-        //
     }
 
     public function getAll()
     {
         $data = Barang::all();
-        return response()->json($data);
+        if ($data) {
+            return ApiResponse::createApi(200, 'Berhasil', $data);
+        } else {
+            return ApiResponse::createApi(400, 'Gagal');
+        }
     }
 
     /**
@@ -58,6 +63,30 @@ class BarangController extends Controller
         return redirect('barang')->with('pesan', 'Data berhasil ditambahkan!');
     }
 
+    public function store(Request $request)
+    {
+        try {
+            $this->validate($request, [
+                'nama_brg' => 'required|unique:barangs,nama_brg',
+                'kategori' => 'required',
+                'unit' => 'required',
+                'harga' => 'required',
+                'qty' => 'required',
+            ]);
+            $barang = Barang::create($request->all());
+
+            $data = Barang::where("id", "=", $barang->id)->get();
+
+            if ($data) {
+                return ApiResponse::createApi(200, 'Data berhasil ditambahkan!', $data);
+            } else {
+                return ApiResponse::createApi(400, 'Gagal');
+            }
+        } catch (Exception $error) {
+            return ApiResponse::createApi(400, 'Gagal', $error);
+        }
+    }
+
     /**
      * Display the specified resource.
      *
@@ -66,9 +95,15 @@ class BarangController extends Controller
      */
     public function show(Request $request)
     {
-        $id = $request->id;
-        $data = Barang::find($id);
-        return json_encode($data);
+        // $data = Barang::find($request->id);
+        $data = Barang::whereIn('id', $request->id)->get();
+        // return response()->json($data);
+        // return json_encode($data);
+        if ($data) {
+            return ApiResponse::createApi(200, 'Berhasil', $data);
+        } else {
+            return ApiResponse::createApi(400, 'Gagal');
+        }
     }
 
     /**
@@ -79,8 +114,9 @@ class BarangController extends Controller
      */
     public function ubah($id)
     {
-        $data = Barang::find($id);
-        return view('barang.ubahBarangV', compact('data'));
+        $data['judul'] = 'Ubah Barang';
+        $data['barang'] = Barang::find($id);
+        return view('barang.ubahBarangV', ["data" => $data]);
     }
 
     /**
@@ -102,6 +138,38 @@ class BarangController extends Controller
         return redirect('barang')->with('pesan', 'Data berhasil diubah!');
     }
 
+    public function update(Request $request)
+    {
+        try {
+            $this->validate($request, [
+                'nama_brg' => 'required|unique:barangs,nama_brg',
+                'kategori' => 'required',
+                'unit' => 'required',
+                'harga' => 'required',
+                'qty' => 'required',
+            ]);
+            $barang = Barang::findOrFail($request->id);
+
+            $barang->update([
+                'nama_brg' => $request->nama_brg,
+                'kategori' => $request->kategori,
+                'unit' => $request->unit,
+                'harga' => $request->harga,
+                'qty' => $request->qty,
+            ]);
+
+            $data = Barang::where("id", "=", $barang->id)->get();
+
+            if ($data) {
+                return ApiResponse::createApi(200, 'Data berhasil diubah!', $data);
+            } else {
+                return ApiResponse::createApi(400, 'Gagal');
+            }
+        } catch (Exception $error) {
+            return ApiResponse::createApi(400, 'Gagal', $error);
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -113,5 +181,16 @@ class BarangController extends Controller
         $data = Barang::find($id);
         $data->delete();
         return redirect('barang')->with('pesan', 'Data berhasil dihapus!');
+    }
+
+    public function destroy(Request $request)
+    {
+        $data = Barang::findOrFail($request->id);
+        $data->delete();
+        if ($data) {
+            return ApiResponse::createApi(200, 'Data berhasil dihapus!', $data);
+        } else {
+            return ApiResponse::createApi(400, 'Gagal');
+        }
     }
 }

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ApiResponse;
 use App\Models\Promo;
 use App\Http\Requests\StorePromoRequest;
 use App\Http\Requests\UpdatePromoRequest;
 use App\Models\Barang;
 use App\Models\Jadwal;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -23,6 +25,16 @@ class PromoController extends Controller
         $data['promo'] = DB::Table('Promos')->leftJoin('barangs', 'barangs.id', '=', 'promos.kode_brg')->leftJoin('jadwals', 'jadwals.id', '=', 'promos.jadwal_id')->get(['promos.*', 'barangs.nama_brg', 'barangs.harga', 'jadwals.freq', 'jadwals.day_no', 'jadwals.start_date', 'jadwals.end_date']);
         return view('promo.promoV', ['data' => $data]);
         // dd($data['promo']);
+    }
+
+    public function getAll()
+    {
+        $data = DB::Table('Promos')->leftJoin('barangs', 'barangs.id', '=', 'promos.kode_brg')->leftJoin('jadwals', 'jadwals.id', '=', 'promos.jadwal_id')->get(['promos.*', 'barangs.nama_brg', 'barangs.harga', 'jadwals.freq', 'jadwals.day_no', 'jadwals.start_date', 'jadwals.end_date']);
+        if ($data) {
+            return ApiResponse::createApi(200, 'Berhasil', $data);
+        } else {
+            return ApiResponse::createApi(400, 'Gagal');
+        }
     }
 
     /**
@@ -66,6 +78,52 @@ class PromoController extends Controller
      * @param  \App\Http\Requests\StorePromoRequest  $request
      * @return \Illuminate\Http\Response
      */
+
+    public function store(Request $request)
+    {
+        try {
+            $this->validate($request, [
+                'nama_promo' => 'required|unique:promos,nama_promo',
+                'barang' => 'required',
+                'diskon' => 'required',
+                'qty_brg' => 'required',
+                'rep' => 'required',
+            ]);
+
+            $id_jadwal = uniqid();
+
+            $date_start = $this->conv($request->datestart, $request->clockstart);
+            $date_end = $this->conv($request->dateend, $request->clockend);
+            $days = $this->detailed_day($request->rep, $request);
+
+            $jadwal = Jadwal::create([
+                'id' => $id_jadwal,
+                'freq' => $request->rep,
+                'day_no' => $days,
+                'start_date' => $date_start,
+                'end_date' => $date_end,
+            ]);
+
+            $promo = Promo::create([
+                'nama_promo' => $request->nama_promo,
+                'kode_brg' => $request->barang,
+                'diskon' => $request->diskon,
+                'qty_brg' => $request->qty_brg,
+                'jadwal_id' => $id_jadwal,
+            ]);
+
+            $data = Promo::where("id", "=", $promo->id)->get();
+
+            if ($data) {
+                return ApiResponse::createApi(200, 'Data berhasil ditambahkan!', $data);
+            } else {
+                return ApiResponse::createApi(400, 'Gagal');
+            }
+        } catch (Exception $error) {
+            return ApiResponse::createApi(400, 'Gagal', $error);
+        }
+    }
+
     public function simpan(Request $request)
     {
         $this->validate($request, [
@@ -75,9 +133,9 @@ class PromoController extends Controller
             'qty_brg' => 'required',
             'rep' => 'required',
         ]);
+
         $id_jadwal = uniqid();
 
-        // $data = $request->all();
         $date_start = $this->conv($request->datestart, $request->clockstart);
         $date_end = $this->conv($request->dateend, $request->clockend);
         $days = $this->detailed_day($request->rep, $request);
@@ -108,9 +166,16 @@ class PromoController extends Controller
      * @param  \App\Models\Promo  $promo
      * @return \Illuminate\Http\Response
      */
-    public function show(Promo $promo)
+    public function show(Request $request)
     {
-        //
+        $data = Promo::find($request->id);
+        // return response()->json($data);
+        // return json_encode($data);
+        if ($data) {
+            return ApiResponse::createApi(200, 'Berhasil', $data);
+        } else {
+            return ApiResponse::createApi(400, 'Gagal');
+        }
     }
 
     /**
@@ -136,9 +201,74 @@ class PromoController extends Controller
      * @param  \App\Models\Promo  $promo
      * @return \Illuminate\Http\Response
      */
-    public function perbaharui(UpdatePromoRequest $request, Promo $promo)
+    public function perbaharui(Request $request)
     {
-        //
+        $date_start = $this->conv($request->datestart, $request->clockstart);
+        $date_end = $this->conv($request->dateend, $request->clockend);
+        $days = $this->detailed_day($request->rep, $request);
+
+        $jadwal = Jadwal::find($request->id_jadwal);
+        $jadwal->freq = $request->rep;
+        $jadwal->day_no = $days;
+        $jadwal->start_date = $date_start;
+        $jadwal->end_date = $date_end;
+
+        $promo = Promo::find($request->id_promo);
+        $promo->nama_promo = $request->nama_promo;
+        $promo->kode_brg = $request->barang;
+        $promo->diskon = $request->diskon;
+        $promo->qty_brg = $request->qty_brg;
+
+        $jadwal->save();
+        $promo->save();
+
+        return redirect('promo')->with('pesan', 'Data berhasil diubah!');
+    }
+
+    public function update(Request $request)
+    {
+        $gabung = DB::table('promos')->join('barangs', 'barangs.id', '=', 'promos.kode_brg')->join('jadwals', 'jadwals.id', '=', 'promos.jadwal_id')->where('promos.id', $request->id)->get(['promos.*', 'barangs.nama_brg', 'barangs.harga', 'jadwals.freq', 'jadwals.day_no', 'jadwals.start_date', 'jadwals.end_date']);
+        // try {
+        //     $this->validate($request, [
+        //         'nama_promo' => 'required|unique:promos,nama_promo',
+        //         'barang' => 'required',
+        //         'diskon' => 'required',
+        //         'qty_brg' => 'required',
+        //         'rep' => 'required',
+        //     ]);
+
+        //     $jadwal_lama = Jadwal::findOrFail($gabung->jadwal_id);
+        //     $promo_lama = Promo::findOrFail($request->id);
+
+        //     $date_start = $this->conv($request->datestart, $request->clockstart);
+        //     $date_end = $this->conv($request->dateend, $request->clockend);
+        //     $days = $this->detailed_day($request->rep, $request);
+
+        //     $jadwal_lama->update([
+        //         'freq' => $request->rep,
+        //         'day_no' => $days,
+        //         'start_date' => $date_start,
+        //         'end_date' => $date_end,
+        //     ]);
+
+        //     $promo_lama->update([
+        //         'nama_promo' => $request->nama_promo,
+        //         'kode_brg' => $request->barang,
+        //         'diskon' => $request->diskon,
+        //         'qty_brg' => $request->qty_brg,
+        //     ]);
+
+        //     $data = Promo::where("id", "=", $promo_lama->id)->get();
+
+        //     if ($data) {
+        //         return ApiResponse::createApi(200, 'Data berhasil ditambahkan!', $data);
+        //     } else {
+        //         return ApiResponse::createApi(400, 'Gagal');
+        //     }
+        // } catch (Exception $error) {
+        //     return ApiResponse::createApi(400, 'Gagal', $error);
+        // }
+        return response()->json($gabung);
     }
 
     /**
@@ -150,7 +280,22 @@ class PromoController extends Controller
     public function hapus($id)
     {
         $data = Promo::find($id);
+        $jadwal = Jadwal::find($data->jadwal_id);
         $data->delete();
-        return redirect('barang')->with('pesan', 'Data berhasil dihapus!');
+        $jadwal->delete();
+        return redirect('promo')->with('pesan', 'Data berhasil dihapus!');
+    }
+
+    public function destroy(Request $request)
+    {
+        $data = Promo::find($request->id);
+        $jadwal = Jadwal::find($data->jadwal_id);
+        $data->delete();
+        $jadwal->delete();
+        if ($data) {
+            return ApiResponse::createApi(200, 'Data berhasil dihapus!', $data);
+        } else {
+            return ApiResponse::createApi(400, 'Gagal');
+        }
     }
 }

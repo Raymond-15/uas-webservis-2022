@@ -20,7 +20,7 @@ class CreatePaketsTable extends Migration
             $table->string('barang_id', 36);
             $table->integer('harga_paket');
             $table->string('jadwal_id');
-            $table->foreign('jadwal_id')->references('id')->on('jadwals');
+            $table->foreign('jadwal_id')->references('id')->on('jadwals')->cascadeOnDelete();
             $table->timestamps();
         });
     }

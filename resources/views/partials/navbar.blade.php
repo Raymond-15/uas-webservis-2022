@@ -13,7 +13,7 @@
           <a class="nav-link" href="{{ route('barang.index') }}">Barang</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Paket</a>
+          <a class="nav-link" href="{{ route('paket.index') }}">Paket</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ route('promo.index') }}">Promo</a>

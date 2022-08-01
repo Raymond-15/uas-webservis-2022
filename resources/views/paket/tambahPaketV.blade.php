@@ -6,23 +6,22 @@
     @php
         echo $data['judul'];
     @endphp
-    <a href="{{ url('promo') }}" class="btn btn-primary btn-sm float-end">Kembali</a>
+    <a href="{{ url('paket') }}" class="btn btn-primary btn-sm float-end">Kembali</a>
   </div>
   <div class="card-body">
-    <form method="POST" action="{{ route('promo.simpan') }}">
+    <form method="POST" action="{{ route('paket.simpan') }}">
       @csrf
       <div class="mb-3">
-        <label for="nama_promo" class="form-label">Nama Promo</label>
-        <input value="{{ old('nama_promo') }}" type="text" class="form-control" name="nama_promo" id="nama_promo">
-        @error('nama_promo')
+        <label for="nama_paket" class="form-label">Nama Paket</label>
+        <input value="{{ old('nama_paket') }}" type="text" class="form-control" name="nama_paket" id="nama_paket">
+        @error('nama_paket')
             <div class="alert alert-danger" role="alert">{{ $message }}</div>
         @enderror
       </div>
 
       <div class="mb-3">
         <label for="barang" class="form-label">Barang</label>
-        <select class="form-select" name="barang" id="barang">
-          <option value="">Pilih</option>
+        <select multiple class="form-select" name="barang[]" id="barang">
           @foreach ($data['barang'] as $brg)
           @if (old('barang') == $brg->id)
           <option value="{{ $brg->id }}" selected>{{ $brg->nama_brg }}</option>              
@@ -37,24 +36,11 @@
       </div>
 
       <div class="mb-3">
-        <label for="harga" class="form-label">Harga</label>
-        <input value="{{ old('harga') }}" type="number" name="harga" class="form-control" id="harga" disabled>
-      </div>
-
-      <div class="mb-3">
-        <label for="diskon" class="form-label">Potongan</label>
-        <input value="{{ old('diskon') }}" type="number" name="diskon" class="form-control" id="diskon">
-        @error('diskon')
+        <label for="harga_paket" class="form-label">Harga Paket</label>
+        <input value="{{ old('harga_paket') }}" type="number" name="harga_paket" class="form-control" id="harga_paket">
+        @error('harga_paket')
             <div class="alert alert-danger" role="alert">{{ $message }}</div>
         @enderror
-      </div>
-
-      <div class="mb-3">
-        <label for="qty_brg" class="form-label">QTY</label>
-        <input value="{{ old('qty_brg') }}" type="number" name="qty_brg" class="form-control" id="qty_brg">
-        @error('qty_brg')
-          <div class="alert alert-danger" role="alert">{{ $message }}</div>
-        @enderror 
       </div>
 
       <!-- Repetition section -->
@@ -134,20 +120,4 @@
 </div>
 
 <script src="{{ asset('js/changepicker.js') }}" defer></script>
-
-<script>
-  $("#barang").change( ()=> { 
-    var data = $("#barang").val();
-    $.ajax({
-      type: "get",
-      url: "/barang/show",
-      data: {id:data},
-      dataType: "json",
-      success: function (response) {
-        $("#harga").val(response['data']['harga']);
-      }
-    });
-    
-  });
-</script>
 @endsection

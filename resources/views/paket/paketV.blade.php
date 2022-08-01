@@ -11,32 +11,31 @@
     @php
         echo $data['judul'];
     @endphp
-    <a href="{{ url('promo/tambah') }}" class="btn btn-primary btn-sm float-end">Tambah</a>
+    <a href="{{ url('paket/tambah') }}" class="btn btn-primary btn-sm float-end">Tambah</a>
   </div>
   <div class="card-body">
     <table class="table table-striped">
       <thead>
         <tr>
           <th scope="col">#</th>
+          <th scope="col">Kode</th>
           <th scope="col">Nama</th>
-          <th scope="col">Barang</th>
-          <th scope="col">Potongan</th>
-          <th scope="col">QTY</th>
+          <th scope="col">Harga</th>
           <th scope="col">Jadwal</th>
           <th scope="col">Aksi</th>
         </tr>
       </thead>
       <tbody>
-        @foreach ($data['promo'] as $prm)
+        @foreach ($data['paket'] as $pkt)
         <tr>
           <th scope="row">{{ $loop->iteration }}</th>
-          <td>{{ $prm->nama_promo }}</td>
-          <td>{{ $prm->nama_brg }}</td>
-          <td>{{ $prm->diskon }}</td>
-          <td>{{ $prm->qty_brg }}</td>
-          <td>@php
-          if ($prm->freq == 2) {
-            $dn = explode(" ", $prm->day_no);
+          <td>{{ $pkt->kode_paket }}</td>
+          <td>{{ $pkt->nama_paket }}</td>
+          <td>{{ $pkt->harga_paket }}</td>
+          <td>
+            @php
+          if ($pkt->freq == 2) {
+            $dn = explode(" ", $pkt->day_no);
                             for($i=0; $i < count($dn); $i++){
                                     if($dn[$i]==1){ 
                                         $ds[$i]="Mon";
@@ -57,16 +56,17 @@
                                 }
                                 $result = implode(" ", $ds);
                                 echo($result);
-          }elseif ($prm->freq == 1) {
-            echo(date('D', $prm->start_date));
-          } @endphp / {{ gmdate('H:i', $prm->start_date) }} - {{ gmdate('H:i', $prm->end_date) }}</td>
+          }elseif ($pkt->freq == 1) {
+            echo(date('D', $pkt->start_date));
+          } @endphp / {{ gmdate('H:i', $pkt->start_date) }} - {{ gmdate('H:i', $pkt->end_date) }}</td>
           <td>
-            <a href="{{ url('promo/ubah/'. $prm->id) }}" class="btn btn-warning btn-sm">Ubah</a>
+            <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="listBarang('{{ $pkt->barang_id }}')">Detail</button>
+            <a href="{{ url('paket/ubah/'. $pkt->id) }}" class="btn btn-warning btn-sm">Ubah</a>
             <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">Hapus</button>
           </td>
         </tr>
 
-          <!-- Modal -->
+          <!-- Modal Hapus-->
           <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
@@ -79,7 +79,26 @@
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                  <a href="{{ url('promo/hapus/'. $prm->id) }}" type="button" class="btn btn-danger">Hapus</a>
+                  <a href="{{ url('paket/hapus/'. $pkt->id) }}" type="button" class="btn btn-danger">Hapus</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Detail-->
+          <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="detailModalLabel">Detail - {{ $pkt->nama_paket }}</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <p>Harga Paket : {{ $pkt->harga_paket }}</p>
+                  <textarea name="list" id="list"></textarea>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                 </div>
               </div>
             </div>
@@ -89,5 +108,28 @@
     </table>
   </div>
 </div>
+
+<script>
+  function listBarang(id_brg){
+    var data = id_brg.split(" ");
+    var hasil = '';
+    // console.log(data);
+    $.ajax({
+      type: "get",
+      url: "/barang/show",
+      data: {
+        id: data,
+      },
+      dataType: "json",
+      success: function (response) {
+        // console.log(response['data']);
+        response['data'].forEach(element => {
+          hasil += element['nama_brg'] + ', ';
+        });
+        $("#list").val(hasil);
+      }
+    });
+  }
+</script>
     
 @endsection

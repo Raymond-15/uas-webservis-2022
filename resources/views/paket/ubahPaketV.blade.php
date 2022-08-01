@@ -6,40 +6,35 @@
     @php
         echo $data['judul'];
     @endphp
-    <a href="{{ url('promo') }}" class="btn btn-primary btn-sm float-end">Kembali</a>
+    <a href="{{ url('paket') }}" class="btn btn-primary btn-sm float-end">Kembali</a>
   </div>
   <div class="card-body">
-    <form method="POST" action="{{ route('promo.perbaharui') }}">
+    <form method="POST" action="{{ route('paket.perbaharui') }}">
       @csrf
-      <input type="hidden" name="id_promo" value="{{ $data['promo'][0]->id }}">
-      <input type="hidden" name="id_jadwal" value="{{ $data['promo'][0]->jadwal_id }}">
+      <input type="hidden" name="id_paket" value="{{ $data['paket'][0]->id }}">
+      <input type="hidden" name="id_jadwal" value="{{ $data['paket'][0]->jadwal_id }}">
       <div class="mb-3">
-        <label for="nama_promo" class="form-label">Nama Promo</label>
-        <input value="{{ $data['promo'][0]->nama_promo }}" type="text" class="form-control" name="nama_promo" id="nama_promo">
+        <label for="nama_paket" class="form-label">Nama Paket</label>
+        <input value="{{ $data['paket'][0]->nama_paket }}" type="text" class="form-control" name="nama_paket" id="nama_paket">
       </div>
 
       <div class="mb-3">
         <label for="barang" class="form-label">Barang</label>
-        <select class="form-select" name="barang" id="barang">
-          <option value="{{ $data['promo'][0]->kode_brg }}" selected>{{ $data['promo'][0]->nama_brg }}</option>              
+        <select multiple class="form-select" name="barang[]" id="barang">
+          @foreach ($data['barang'] as $brg)
+                <option value="{{ $brg->id }}" @foreach ($data['list'] as $list)
+                    {{ ($list == $brg->id) ? 'selected' : '' }}
+                @endforeach>{{ $brg->nama_brg }}</option>
+          @endforeach
         </select>
+        @error('barang')
+            <div class="alert alert-danger" role="alert">{{ $message }}</div>
+        @enderror
       </div>
 
       <div class="mb-3">
         <label for="harga" class="form-label">Harga</label>
-        <input value="{{ $data['promo'][0]->harga }}" type="number" name="harga" class="form-control" id="harga" disabled>
-      </div>
-
-      <div class="mb-3">
-        <label for="diskon" class="form-label">Potongan</label>
-        <input value="{{ $data['promo'][0]->diskon }}" type="number" name="diskon" class="form-control" id="diskon">
- 
-      </div>
-
-      <div class="mb-3">
-        <label for="qty_brg" class="form-label">QTY</label>
-        <input value="{{ $data['promo'][0]->qty_brg }}" type="number" name="qty_brg" class="form-control" id="qty_brg">
-
+        <input value="{{ $data['paket'][0]->harga_paket }}" type="number" name="harga" class="form-control" id="harga">
       </div>
 
       <!-- Repetition section -->
@@ -47,8 +42,8 @@
         <label for="rep">Rentang jadwal</label>
         <select class="form-control" id="rep" name="rep">
             <option value="">Pilih</option>
-            <option value="1" {{ ($data['promo'][0]->freq == '1') ? 'selected' : '' }}>Satu hari</option>
-            <option value="2" {{ ($data['promo'][0]->freq == '2') ? 'selected' : '' }}>Mingguan</option>
+            <option value="1" {{ ($data['paket'][0]->freq == '1') ? 'selected' : '' }}>Satu hari</option>
+            <option value="2" {{ ($data['paket'][0]->freq == '2') ? 'selected' : '' }}>Mingguan</option>
         </select>
       </div>
 
@@ -111,45 +106,29 @@
         <label for="datestart">Date start</label>
         <div class="input-group date">
             <span class="input-group-text"><i class="fas fa-calendar"></i></span>
-            <input type="text" class="form-control" value="{{ date('d/m/Y', $data['promo'][0]->start_date) }}" id="datestart" name="datestart">
+            <input type="text" class="form-control" value="{{ date('d/m/Y', $data['paket'][0]->start_date) }}" id="datestart" name="datestart">
         </div>
       </div>
       <div class="mb-3" id="simple-date2">
         <label for="simpleDataInput">Date end</label>
         <div class="input-group date">
             <span class="input-group-text"><i class="fas fa-calendar"></i></span>      
-            <input type="text" class="form-control" value="{{ date('d/m/Y', $data['promo'][0]->end_date) }}" id="dateend" name="dateend">
+            <input type="text" class="form-control" value="{{ date('d/m/Y', $data['paket'][0]->end_date) }}" id="dateend" name="dateend">
         </div>
       </div>
 
       <div class="mb-3" id="simple-date4">
         <label for="dateRangePicker">Time</label>
         <div class="input-daterange input-group">
-            <input data-autoclose="true" data-placement="top" type="text" class="form-control" id="clockPicker1" value="{{ date('H:i', $data['promo'][0]->start_date) }}" name="clockstart">
+            <input data-autoclose="true" data-placement="top" type="text" class="form-control" id="clockPicker1" value="{{ date('H:i', $data['paket'][0]->start_date) }}" name="clockstart">
             <span class="input-group-text">to</span>
-            <input data-autoclose="true" data-placement="top" type="text" class="form-control" id="clockPicker2" value="{{ date('H:i', $data['promo'][0]->end_date) }}" name="clockend">
+            <input data-autoclose="true" data-placement="top" type="text" class="form-control" id="clockPicker2" value="{{ date('H:i', $data['paket'][0]->end_date) }}" name="clockend">
         </div>
       </div>
       <button type="submit" class="btn btn-success">Submit</button>
     </form>
   </div>
 </div>
-
-<script>
-  $("#barang").change( ()=> { 
-    var data = $("#barang").val();
-    $.ajax({
-      type: "get",
-      url: "/barang/show",
-      data: {id:data},
-      dataType: "json",
-      success: function (response) {
-        $("#harga").val(response['harga']);
-      }
-    });
-    
-  });
-</script>
 
 <script>
   var x = document.getElementById("rep").value;
