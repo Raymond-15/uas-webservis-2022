@@ -23,7 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('barang/getall', [BarangController::class, 'getAll']);
 Route::get('barang/show', [BarangController::class, 'show']);
-Route::post('barang/store', [BarangController::class, 'store'])->middleware('auth:api');
+Route::post('barang/store', [BarangController::class, 'store']);
 Route::post('barang/update', [BarangController::class, 'update']);
 Route::post('barang/destroy', [BarangController::class, 'destroy'])->middleware('auth:api');
 
