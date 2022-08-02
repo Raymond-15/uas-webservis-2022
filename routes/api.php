@@ -23,21 +23,21 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('barang/getall', [BarangController::class, 'getAll']);
 Route::get('barang/show', [BarangController::class, 'show']);
-Route::post('barang/store', [BarangController::class, 'store']);
-Route::post('barang/update', [BarangController::class, 'update']);
+Route::post('barang/store', [BarangController::class, 'store'])->middleware('auth:api');
+Route::post('barang/update', [BarangController::class, 'update'])->middleware('auth:api');
 Route::post('barang/destroy', [BarangController::class, 'destroy'])->middleware('auth:api');
 
 Route::get('promo/show', [PromoController::class, 'show']);
 Route::get('promo/getall', [PromoController::class, 'getAll']);
-Route::post('promo/destroy', [PromoController::class, 'destroy']);
-Route::post('promo/store', [PromoController::class, 'store']);
-Route::post('promo/update', [PromoController::class, 'update']);
+Route::post('promo/destroy', [PromoController::class, 'destroy'])->middleware('auth:api');
+Route::post('promo/store', [PromoController::class, 'store'])->middleware('auth:api');
+Route::post('promo/update', [PromoController::class, 'update'])->middleware('auth:api');
 
 Route::get('paket/getall', [PaketController::class, 'getAll']);
 Route::get('paket/show', [PaketController::class, 'show']);
-Route::post('paket/store', [PaketController::class, 'store']);
-Route::post('paket/update', [PaketController::class, 'update']);
-Route::post('paket/destroy', [PaketController::class, 'destroy']);
+Route::post('paket/store', [PaketController::class, 'store'])->middleware('auth:api');
+Route::post('paket/update', [PaketController::class, 'update'])->middleware('auth:api');
+Route::post('paket/destroy', [PaketController::class, 'destroy'])->middleware('auth:api');
 
 Route::group([
     'middleware' => 'api',
