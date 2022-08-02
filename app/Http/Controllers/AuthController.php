@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+// use App\Http\Controllers\AuthController;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -16,6 +21,31 @@ class AuthController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['login']]);
+    }
+
+    public function register()
+    {
+        $validator = Validator::make(request()->all(), [
+            'name' => 'required',
+            'email' => 'required|email|unique:users',
+            'password' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Unsuccessfully register']);
+        }
+
+        $user = User::create([
+            'name' => request('name'),
+            'email' => request('email'),
+            'password' => Hash::make(request('password')),
+        ]);
+
+        if ($user) {
+            return ApiResponse::createApi(200, 'Data berhasil ditambahkan!', $user);
+        } else {
+            return ApiResponse::createApi(400, 'Gagal');
+        }
     }
 
     /**
